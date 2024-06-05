@@ -1,7 +1,12 @@
 package com.learn.shoppingApp.orderservice.customException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -21,6 +26,20 @@ public class ErrorHandler {
 		oos.setErrorResponse(ex.getMessage());
 		
 		return new ResponseEntity<OutOfStockEntity>(oos, HttpStatus.NOT_ACCEPTABLE);
+		
+	}
+	
+	@ExceptionHandler(value= MethodArgumentNotValidException.class)
+	public ResponseEntity<List<String>> argumentInvalidExceptionHandler(MethodArgumentNotValidException ex)
+	{
+		List<ObjectError> errors = ex.getAllErrors();
+		List<String> errorResponses = new ArrayList<>();
+		
+		for (ObjectError e : errors) {
+			errorResponses.add(e.getDefaultMessage());
+		};
+		
+		return new ResponseEntity<List<String>>(errorResponses, HttpStatus.NOT_ACCEPTABLE);
 		
 	}
 	
